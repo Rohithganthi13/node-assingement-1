@@ -3,7 +3,7 @@ const path = require("path");
 
 const adminRoutes = require("./routes/adminRoutes");
 const shopRoutes = require("./routes/shopRouter");
-
+const db = require("./utils/database.js");
 const bodyParser = require("body-parser");
 const app = express();
 
@@ -13,6 +13,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", "views");
+
+db.execute("SELECT * FROM products")
+  .then((result) => {
+    console.log("fetched");
+  })
+  .catch((err) => console.log(err));
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

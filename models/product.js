@@ -1,18 +1,4 @@
-const fs = require("fs");
-const path = require("path");
-
-const p = path.join(__dirname, "..", "data", "products.json");
-
-const getProductsFromFile = (cb) => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileContent));
-    }
-  });
-};
-
+const db = require("../utils/database.js");
 module.exports = class Product {
   constructor(title, price, imageUrl, description, id) {
     this.title = title;
@@ -22,48 +8,19 @@ module.exports = class Product {
     this.id = id;
   }
   save() {
-    getProductsFromFile((products) => {
-      if (this.id) {
-        const existingIndex = products.findIndex((prod) => prod.id === this.id);
-        const updatedProducts = [...products];
-        updatedProducts[existingIndex] = this;
-        fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      } else {
-        this.id = Math.random().toString();
-        products.push(this);
-        fs.writeFile(p, JSON.stringify(products), (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      }
-    });
+    return db.execute(
+      "INSERT INTO products(title,price,imageUrl,description) VALUES(?,?,?,?)",
+      [this.title, this.price, this.imageUrl, this.description],
+    );
   }
 
-  static fetchAll(cb) {
-    getProductsFromFile(cb);
+  static fetchAll() {
+    return db.execute("SELECT * FROM products");
   }
-  static findById(id, cb) {
-    getProductsFromFile((products) => {
-      const product = products.find((prod) => prod.id === id);
-      cb(product);
-    });
+  static findById(id) {
+    return db.execute("SELECT * FROM products WHERE id = ?", [id]);
   }
-  static deleteById(id, cb) {
-    getProductsFromFile((products) => {
-      const updatedProducts = products.filter((prod) => prod.id != id);
-      fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-        if (!err) {
-          console.log("product deleted");
-        }
-        if (cb) {
-          cb();
-        }
-      });
-    });
+  static deleteById(id) {
+    //under construction
   }
 };
