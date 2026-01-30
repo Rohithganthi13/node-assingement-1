@@ -21,6 +21,6 @@ module.exports = class Product {
     return db.execute("SELECT * FROM products WHERE id = ?", [id]);
   }
   static deleteById(id) {
-    //under construction
+    return db.execute("DELETE FROM products WHERE id = ? LIMIT 1", [id]);
   }
 };
