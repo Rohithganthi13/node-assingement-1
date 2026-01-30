@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+
 const p = path.join(__dirname, "..", "data", "products.json");
 
 const getProductsFromFile = (cb) => {
@@ -42,21 +43,22 @@ module.exports = class Product {
       }
     });
   }
+
   static fetchAll(cb) {
     getProductsFromFile(cb);
   }
   static findById(id, cb) {
     getProductsFromFile((products) => {
-      const product = products.find((p) => p.id === id);
+      const product = products.find((prod) => prod.id === id);
       cb(product);
     });
   }
-  static delete(id, cb) {
+  static deleteById(id, cb) {
     getProductsFromFile((products) => {
-      const updatedProducts = products.filter((prod) => prod.id !== id);
+      const updatedProducts = products.filter((prod) => prod.id != id);
       fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-        if (err) {
-          console.log(err);
+        if (!err) {
+          console.log("product deleted");
         }
         if (cb) {
           cb();

@@ -37,5 +37,16 @@ exports.postCart = (req, res, next) => {
   const price = req.body.productPrice;
   console.log(prodId, price);
   Cart.addProduct(prodId, price);
-  res.redirect("/");
+  res.redirect("/cart");
+};
+
+exports.getCart = (req, res, next) => {
+  Cart.fetchCart((cart) => {
+    res.render("shop/cart", {
+      pageTitle: "Cart",
+      path: "/cart",
+      products: cart.products,
+      totalPrice: cart.totalPrice,
+    });
+  });
 };
